@@ -183,6 +183,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 						uptime = uptime.replace("minutes,", "perc");
 						uptime = uptime.replace("seconds", "másodperc");
 						uptime = uptime.replace("minute,", "perc");
+						uptime = uptime.replace("minutes", "perc");
 					}
 					client.say(channel, uptime);
 					var d = new Date();
