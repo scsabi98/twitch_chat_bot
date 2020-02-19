@@ -176,13 +176,18 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 					if (err) { return console.log(err); }
 					console.log(body.body);
 					var uptime = body.body
-					uptime = uptime.replace("minutes,", "perce és ");
-					uptime = uptime.replace("seconds", "másodperce ");
-					uptime = uptime.replace("minute,", "perce és ");
-					uptime = uptime.replace("minutes", "perce és ");
-					uptime = uptime.replace("hour,", "órája ");
-					uptime = uptime.replace("hours,", "órája ");
-					message = "Már " + uptime + "pörög az adás!";
+					var tmp = config.channelname + " is offline";
+					if (body.body == tmp)
+						message = tmp;
+					else{
+						uptime = uptime.replace("minutes,", "perce és ");
+						uptime = uptime.replace("seconds", "másodperce ");
+						uptime = uptime.replace("minute,", "perce és ");
+						uptime = uptime.replace("minutes", "perce és ");
+						uptime = uptime.replace("hour,", "órája ");
+						uptime = uptime.replace("hours,", "órája ");
+						message = "Már " + uptime + "pörög az adás!";
+					}
 					client.say(channel, message);
 					var d = new Date();
 					var ms = d.getTime();
