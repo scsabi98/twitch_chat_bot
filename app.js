@@ -180,12 +180,15 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 						uptime = "bavaz1 közvetítése jelenleg offline!"
 					}
 					else {
-						uptime = uptime.replace("minutes,", "perc");
-						uptime = uptime.replace("seconds", "másodperc");
-						uptime = uptime.replace("minute,", "perc");
-						uptime = uptime.replace("minutes", "perc");
+						uptime = uptime.replace("minutes,", "perce és ");
+						uptime = uptime.replace("seconds", "másodperce ");
+						uptime = uptime.replace("minute,", "perce és ");
+						uptime = uptime.replace("minutes", "perce és ");
+						uptime = uptime.replace("hour,", "órája ");
+						uptime = uptime.replace("hours,", "órája ");
 					}
-					client.say(channel, uptime);
+					message = "Már " + uptime + "pörög az adás!";
+					client.say(channel, message);
 					var d = new Date();
 					var ms = d.getTime();
 					lastuptime = ms;
