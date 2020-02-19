@@ -195,10 +195,8 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 					});
 				}
 
-		/*case ("!teszt2"):
-			console.log(moderators[1].name);
-			console.log(moderators[0].name);
-			console.log(moderators.length);*/
+		case ("!ping"):
+			client.say(channel, "pong!");
         default:
             (() => {
                 let command = commands
