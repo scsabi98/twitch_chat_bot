@@ -1,0 +1,8 @@
+[
+    {
+        "name": "!test",
+        "message": "Test message for the bot",
+        "author": "username",
+        "active": true
+    }
+]

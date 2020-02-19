@@ -1,0 +1,19 @@
+{
+  "name": "twitch_chat_bot",
+  "version": "0.1.0",
+  "description": "Simple twitch chat bot",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scsabi98/twitch_chat_bot.git"
+  },
+  "author": "Csaba Steiner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/scsabi98/twitch_chat_bot"
+  },
+  "homepage": "https://github.com/scsabi98/twitch_chat_bot#readme",
+  "dependencies": {
+    "tmi.js": "^1.5.0"
+  }
+}
