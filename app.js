@@ -84,7 +84,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
                     ).sort()
                     .join(", ");
 
-                client.say(channel, `@${userstate.username} A következő parancsok elérhetőek: ${names}`);
+                client.say(channel, `@${userstate.username} A következő parancsok érhetőek el: ${names}`);
             })();
             break;
         case ("!add"):
