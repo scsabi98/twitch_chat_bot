@@ -1,0 +1,6 @@
+/.vscode/
+/node_modules/
+debug.log
+app.cfg.json
+commands.json
+moderators.json
