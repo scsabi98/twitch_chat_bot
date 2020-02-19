@@ -194,9 +194,11 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 					lastuptime = ms;
 					});
 				}
+				break;
 
 		case ("!ping"):
 			client.say(channel, "pong!");
+			break;
         default:
             (() => {
                 let command = commands
