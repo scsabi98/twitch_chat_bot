@@ -172,21 +172,16 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 		case ("!uptime"):
 			if(modcheck(userstate.username) || !isused(lastuptime)){
 				const request = require('request');
-				request('http://decapi.me/twitch/uptime?channel=bavaz1', { json: true }, (err, body) => {
+				request(config.uptime, { json: true }, (err, body) => {
 					if (err) { return console.log(err); }
 					console.log(body.body);
 					var uptime = body.body
-					if(uptime == "bavaz1 is offline"){
-						uptime = "bavaz1 közvetítése jelenleg offline!"
-					}
-					else {
-						uptime = uptime.replace("minutes,", "perce és ");
-						uptime = uptime.replace("seconds", "másodperce ");
-						uptime = uptime.replace("minute,", "perce és ");
-						uptime = uptime.replace("minutes", "perce és ");
-						uptime = uptime.replace("hour,", "órája ");
-						uptime = uptime.replace("hours,", "órája ");
-					}
+					uptime = uptime.replace("minutes,", "perce és ");
+					uptime = uptime.replace("seconds", "másodperce ");
+					uptime = uptime.replace("minute,", "perce és ");
+					uptime = uptime.replace("minutes", "perce és ");
+					uptime = uptime.replace("hour,", "órája ");
+					uptime = uptime.replace("hours,", "órája ");
 					message = "Már " + uptime + "pörög az adás!";
 					client.say(channel, message);
 					var d = new Date();
