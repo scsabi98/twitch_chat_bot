@@ -11,6 +11,8 @@ var util = require('util');
 var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'w'});
 var log_stdout = process.stdout;
 
+var lastuptime = 0; //global variable needed for uptime timer
+
 console.log = function(d) { //
   log_file.write(util.format(d) + '\n');
   log_stdout.write(util.format(d) + '\n');
@@ -70,7 +72,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
     switch (commandName) {
         case ("!commands"):
             (() => {
-                let names = "!commands !add !remove !uptime"
+                let names = "!commands !uptime"
                     .split(/\s/)
                     .concat(
                         commands.map(c => {
@@ -121,7 +123,8 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
                     name: commandName,
                     message: commandMessage,
                     author: userstate.username,
-                    active: true
+                    active: true,
+					lastused: 0
                 });
 
                 client.say(channel, `@${userstate.username} Parancs "${commandName}" hozzáadva!`);
@@ -167,22 +170,27 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
             })();
             break;
 		case ("!uptime"):
-			const request = require('request');
-			request('http://decapi.me/twitch/uptime?channel=bavaz1', { json: true }, (err, body) => {
-				if (err) { return console.log(err); }
-				console.log(body.body);
-				var uptime = body.body
-				if(uptime == "bavaz1 is offline"){
-					uptime = "bavaz1 közvetítése jelenleg offline!"
+			if(modcheck(userstate.username) || !isused(lastuptime)){
+				const request = require('request');
+				request('http://decapi.me/twitch/uptime?channel=bavaz1', { json: true }, (err, body) => {
+					if (err) { return console.log(err); }
+					console.log(body.body);
+					var uptime = body.body
+					if(uptime == "bavaz1 is offline"){
+						uptime = "bavaz1 közvetítése jelenleg offline!"
+					}
+					else {
+						var tmp1 = uptime.replace("minutes,", "perc");
+						var tmp2 = tmp1.replace("seconds", "másodperc");
+						uptime = tmp2;
+					}
+					client.say(channel, uptime);
+					var d = new Date();
+					var ms = d.getTime();
+					lastuptime = ms;
+					});
 				}
-				else {
-					var tmp1 = uptime.replace("minutes,", "perc");
-					var tmp2 = tmp1.replace("seconds", "másodperc");
-					uptime = tmp2;
-				}
-				client.say(channel, uptime);
-			
-			});
+
 		/*case ("!teszt2"):
 			console.log(moderators[1].name);
 			console.log(moderators[0].name);
@@ -193,16 +201,27 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
                     .filter(c => {
                         return c.name === commandName && c.active;
                     });
-
                 if (command.length <= 0) { return; }
                 command = command[0];
-
-                if (`#${command.author}` === channel) {
-                    client.say(channel, `${command.message}`);
-                }
-                else {
-                    client.say(channel, `${command.message}`);
-                }
+				if(!modcheck(userstate.username)){
+				
+					if(isused(command.lastused)){
+						return;
+					}
+					else{
+						client.say(channel, `${command.message}`);
+						var d = new Date();
+						var now = d.getTime();
+						command.lastused = now;
+					}
+				}
+				else //in case of the chatter is mod, bypass the timer
+				{
+					client.say(channel, `${command.message}`);
+					var d = new Date();
+					var now = d.getTime();
+					command.lastused = now;
+				}
             })();
             break;
     }
@@ -216,7 +235,17 @@ function modcheck(username){
 				return true;
 			i++;
 		}
-	var errormessage = "Permission error for " + username + "!";
-	console.log(errormessage)
 	return false;
+}
+
+function isused(time){ //return true if time+10000 < getTime (10sec delay checker)
+	console.log("isused triggered with time: " + time);
+	var d = new Date();
+	now = d.getTime();
+	console.log("Current time: " + now)
+	if ((time+10000) >= now){
+		return true;
+	}
+	else
+		return false;
 }
