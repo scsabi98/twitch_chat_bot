@@ -13,6 +13,7 @@ var log_stdout = process.stdout;
 
 var lastuptime = 0; //global variable needed for uptime timer
 
+
 console.log = function(d) { //
   log_file.write(util.format(d) + '\n');
   log_stdout.write(util.format(d) + '\n');
@@ -171,31 +172,33 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
             break;
 		case ("!uptime"):
 			if(modcheck(userstate.username) || !isused(lastuptime)){
-				const request = require('request');
-				request(config.uptime, { json: true }, (err, body) => {
-					if (err) { return console.log(err); }
-					console.log(body.body);
-					var uptime = body.body
-					var tmp = config.channelname + " is offline";
-					if (body.body == tmp)
-						message = tmp;
-					else{
-						uptime = uptime.replace("minutes,", "perce és ");
-						uptime = uptime.replace("seconds", "másodperce ");
-						uptime = uptime.replace("minute,", "perce és ");
-						uptime = uptime.replace("minutes", "perce és ");
-						uptime = uptime.replace("hour,", "órája ");
-						uptime = uptime.replace("hours,", "órája ");
-						message = "Már " + uptime + "pörög az adás!";
+				var url = 'https://api.twitch.tv/helix/streams?user_id=' + config.broadcasterid;
+				api_get(url ,function(ret){
+					var uptimemessage;
+					try{
+						started = Date.parse(ret.data[0].started_at);
+						var d = new Date;
+						var now = d.getTime();
+						var runtime = now - started;
+						var uptimehours = Math.ceil(runtime / 1000 / 60 / 60);
+						var uptimeminutes = Math.ceil(runtime / 1000 / 60 % 60);
+						uptimemessage = 'Már ' + uptimehours + ' órája és ' + uptimeminutes + ' perce pörög az adás!';
+					}catch(err){
+						uptimemessage = config.channelname + ' jelenleg nem közvetít. Nézz vissza később!';
 					}
-					client.say(channel, message);
-					var d = new Date();
-					var ms = d.getTime();
-					lastuptime = ms;
-					});
-				}
+					client.say(channel, uptimemessage);
+				});
+			}
 				break;
-
+		case ("!clip"):
+			var url = 'https://api.twitch.tv/helix/clips?broadcaster_id=' + config.broadcasterid;
+			api_post(url, function(ret){
+				console.log(ret);
+				ret_url = ret.data[0].edit_url;
+				ret_url = ret_url.replace('/edit', '');
+				client.say(channel, ret_url);
+			});
+			break;
 		case ("!ping"):
 			client.say(channel, "pong!");
 			break;
@@ -246,10 +249,50 @@ function isused(time){ //return true if time+10000 < getTime (10sec delay checke
 	console.log("isused triggered with time: " + time);
 	var d = new Date();
 	now = d.getTime();
-	console.log("Current time: " + now)
+	console.log("Current time: " + now);
 	if ((time+10000) >= now){
 		return true;
 	}
 	else
 		return false;
+}
+
+function api_get(url, callback){
+	var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+	const Http = new XMLHttpRequest();
+	const clientid = config.clientid;
+	const token = config.token;
+	Http.open('GET', url);
+	Http.setRequestHeader('Client-ID', clientid);
+	Http.setRequestHeader('Authorization', token);
+	Http.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200){
+			console.log('Succesfull api request');
+			var ret = JSON.parse(Http.responseText);
+			if (callback) callback(ret);
+		}
+	}
+	Http.send();
+}
+
+function api_post(url, callback){
+	var ready = false;
+	var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+	const Http = new XMLHttpRequest();
+	const clientid = config.clientid;
+	const token = config.token;
+	Http.open('POST', url, true);
+	Http.setRequestHeader('Client-ID', clientid);
+	Http.setRequestHeader('Authorization', token);
+	Http.onreadystatechange = function() {
+		if (this.readyState == 4 && (this.status == 200 || this.status == 202) && ready == false){
+			console.log('Succesfull api request');
+			console.log(this.status);
+			var ret = JSON.parse(Http.responseText);
+			ready = true;
+			if (callback) callback(ret);
+			
+		}
+	}
+	Http.send();
 }
