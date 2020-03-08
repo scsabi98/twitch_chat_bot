@@ -67,6 +67,32 @@ app.post( '/', ( req, res ) => {
 
 app.listen( 9000, () => console.log( 'Node.js server started on port 9000.' ) );
 
+var json = '{"hub.callback":"http://3df63de0.ngrok.io","hub.mode":"subscribe","hub.topic":"https://api.twitch.tv/helix/users/follows?first=1&to_id=50603693","hub.lease_seconds":"86400"}';
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const Http = new XMLHttpRequest();
+const clientid = config.clientid;
+const token = config.token;
+Http.open('POST', 'https://api.twitch.tv/helix/webhooks/hub', true);
+Http.setRequestHeader('Content-Type', 'application/json');
+Http.setRequestHeader('Content-Length', json.length);
+Http.setRequestHeader('Client-ID', clientid);
+Http.setRequestHeader('Authorization', token);
+Http.onreadystatechange = function() {
+	if (this.readyState == 4 && (this.status == 200 || this.status == 202)){
+		console.log('Succesfull api request');
+		console.log(this.status);
+		console.log(Http.responseText);
+		
+	}else{
+		console.log(this.status);
+		console.log(this.statusText);
+	}
+}
+Http.send(json);
+
+
+
+
 client.on("chat", (channel, userstate, commandMessage, self) => {
     if (self) { return; };
     if (!config.verbose) { return; };
@@ -306,5 +332,5 @@ function api_post(url, callback){
 			
 		}
 	}
-	Http.send();
+	Http.send(body);
 }
