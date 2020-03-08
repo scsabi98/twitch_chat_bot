@@ -14,6 +14,9 @@
   },
   "homepage": "https://github.com/scsabi98/twitch_chat_bot#readme",
   "dependencies": {
+    "epress": "0.0.1-security",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "tmi.js": "^1.5.0",
     "xmlhttprequest": "^1.8.0"
   }

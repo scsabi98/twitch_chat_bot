@@ -12,6 +12,7 @@ var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'w'});
 var log_stdout = process.stdout;
 
 var lastuptime = 0; //global variable needed for uptime timer
+var timer = 0;
 
 
 console.log = function(d) { //
@@ -54,6 +55,17 @@ process.on("SIGINT", () => {
             process.exit();
         });
 });
+
+const express = require( 'express' );
+const app = express();
+app.use( express.json() );
+
+app.post( '/', ( req, res ) => {
+    console.log( 'received webhook', req.body );
+    res.sendStatus( 200 );
+} );
+
+app.listen( 9000, () => console.log( 'Node.js server started on port 9000.' ) );
 
 client.on("chat", (channel, userstate, commandMessage, self) => {
     if (self) { return; };
