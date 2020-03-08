@@ -180,9 +180,13 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 						var d = new Date;
 						var now = d.getTime();
 						var runtime = now - started;
-						var uptimehours = Math.ceil(runtime / 1000 / 60 / 60);
-						var uptimeminutes = Math.ceil(runtime / 1000 / 60 % 60);
-						uptimemessage = 'Már ' + uptimehours + ' órája és ' + uptimeminutes + ' perce pörög az adás!';
+						var uptimehours = Math.floor(runtime / 1000 / 60 / 60);
+						var uptimeminutes = Math.floor(runtime / 1000 / 60 % 60);
+						if (uptimehours == 0){
+							uptimemessage = 'Már ' + uptimeminutes + ' perce pörög az adás!';
+						}else{
+							uptimemessage = 'Már ' + uptimehours + ' órája és ' + uptimeminutes + ' perce pörög az adás!';
+						}
 					}catch(err){
 						uptimemessage = config.channelname + ' jelenleg nem közvetít. Nézz vissza később!';
 					}
