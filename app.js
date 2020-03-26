@@ -12,6 +12,7 @@ var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'w'});
 var log_stdout = process.stdout;
 
 var lastuptime = 0; //global variable needed for uptime timer
+var timer = 0;
 
 
 console.log = function(d) { //
@@ -54,6 +55,17 @@ process.on("SIGINT", () => {
             process.exit();
         });
 });
+
+
+listeners(client);
+
+followersubscribe(); //renew subscription at starting.
+
+setInterval(function(){ //renew the follower subscribtion every 30 second
+	followersubscribe();
+}, 30000);
+
+
 
 client.on("chat", (channel, userstate, commandMessage, self) => {
     if (self) { return; };
@@ -298,5 +310,57 @@ function api_post(url, callback){
 			
 		}
 	}
-	Http.send();
+	Http.send(body);
+}
+
+function followersubscribe(){
+	var json = '{"hub.callback":"' + config.callback + '","hub.mode":"subscribe","hub.topic":"https://api.twitch.tv/helix/users/follows?first=1&to_id=' + config.broadcasterid + '","hub.lease_seconds":"30"}';
+	var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+	const Http = new XMLHttpRequest();
+	const clientid = config.clientid;
+	const token = config.token;
+	Http.open('POST', 'https://api.twitch.tv/helix/webhooks/hub', true);
+	Http.setRequestHeader('Content-Type', 'application/json');
+	Http.setRequestHeader('Client-ID', clientid);
+	Http.setRequestHeader('Authorization', token);
+	Http.onreadystatechange = function() {
+		if (this.readyState == 4 && (this.status == 200 || this.status == 202)){
+			console.log('Succesfull api request');
+			console.log(this.status);
+			console.log(Http.responseText);
+			
+		}else{
+			console.log(this.status);
+			console.log(this.statusText);
+		}
+	}
+	Http.send(json);
+	console.log("Follower subscripe api request sent!")
+}
+
+function listeners(){
+	const express = require( 'express' );
+	const app = express();
+	app.use( express.json() );
+
+	app.post( '/', ( req, res ) => {
+		console.log( 'received webhook');
+		var responsedata = req.body;
+		if(responsedata.data[0].hasOwnProperty('followed_at')){
+			var message = config.followalert_message;
+			message = message.replace("___", responsedata.data[0].from_name);
+			client.say('#bavaz1', message);
+		}
+		res.sendStatus( 200 );
+	} );
+
+	app.get( '/', ( req, res ) => {
+		var url = req.url;
+		var response = req.query;
+		res.send(req.query['hub.challenge']);
+
+		
+	} );
+
+	app.listen( 9000, () => console.log( 'Node.js server started on port 80.' ) );
 }
