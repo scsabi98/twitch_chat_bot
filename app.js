@@ -323,7 +323,7 @@ function followersubscribe(){
 	Http.setRequestHeader('Content-Type', 'application/json');
 	Http.setRequestHeader('Client-ID', clientid);
 	Http.setRequestHeader('Authorization', token);
-	Http.onreadystatechange = function() {
+	/*Http.onreadystatechange = function() {
 		if (this.readyState == 4 && (this.status == 200 || this.status == 202)){
 			console.log('Succesfull api request');
 			console.log(this.status);
@@ -333,7 +333,7 @@ function followersubscribe(){
 			console.log(this.status);
 			console.log(this.statusText);
 		}
-	}
+	}*/
 	Http.send(json);
 	console.log("Follower subscripe api request sent!")
 }
@@ -344,7 +344,7 @@ function listeners(){
 	app.use( express.json() );
 
 	app.post( '/', ( req, res ) => {
-		console.log( 'received webhook');
+		//console.log( 'received webhook');
 		var responsedata = req.body;
 		if(responsedata.data[0].hasOwnProperty('followed_at')){
 			var message = config.followalert_message;
@@ -362,5 +362,5 @@ function listeners(){
 		
 	} );
 
-	app.listen( 9000, () => console.log( 'Node.js server started on port 80.' ) );
+	app.listen( 9000, () => console.log( 'Node.js server started on port 9000.' ) );
 }
