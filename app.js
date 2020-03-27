@@ -63,7 +63,7 @@ followersubscribe(); //renew subscription at starting.
 
 setInterval(function(){ //renew the follower subscribtion every 30 second
 	followersubscribe();
-}, 30000);
+}, 3600000);
 
 
 
@@ -314,7 +314,7 @@ function api_post(url, callback){
 }
 
 function followersubscribe(){
-	var json = '{"hub.callback":"' + config.callback + '","hub.mode":"subscribe","hub.topic":"https://api.twitch.tv/helix/users/follows?first=1&to_id=' + config.broadcasterid + '","hub.lease_seconds":"30"}';
+	var json = '{"hub.callback":"' + config.callback + '","hub.mode":"subscribe","hub.topic":"https://api.twitch.tv/helix/users/follows?first=1&to_id=' + config.broadcasterid + '","hub.lease_seconds":"3600"}';
 	var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 	const Http = new XMLHttpRequest();
 	const clientid = config.clientid;
