@@ -310,7 +310,7 @@ function api_post(url, callback){
 			
 		}
 	}
-	Http.send(body);
+	Http.send();
 }
 
 function followersubscribe(){
