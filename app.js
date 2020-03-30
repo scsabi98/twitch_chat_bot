@@ -5,6 +5,7 @@ const logger = require("tmi.js/lib/logger");
 const config = JSON.parse(fs.readFileSync("app.cfg.json"));
 const moderators = JSON.parse(fs.readFileSync("moderators.json"))
 let commands = JSON.parse(fs.readFileSync(config.commands));
+let followers = [];
 let viewers = [];
 
 var util = require('util');
@@ -347,9 +348,17 @@ function listeners(){
 		//console.log( 'received webhook');
 		var responsedata = req.body;
 		if(responsedata.data[0].hasOwnProperty('followed_at')){
-			var message = config.followalert_message;
-			message = message.replace("___", responsedata.data[0].from_name);
-			client.say('#bavaz1', message);
+			var istroll = false;
+			followers.forEach(function(item, index, array) {
+				if(responsedata.data[0].from_name == item)
+					istroll = true;
+			})
+			if (istroll == false){
+				var message = config.followalert_message;
+				message = message.replace("___", responsedata.data[0].from_name);
+				client.say('#bavaz1', message);
+				followers.push(responsedata.data[0].from_name);
+			}
 		}
 		res.sendStatus( 200 );
 	} );
