@@ -66,6 +66,10 @@ setInterval(function(){ //renew the follower subscribtion every 30 second
 	followersubscribe();
 }, 3600000);
 
+setInterval(function(){
+	randommessage();
+}, 240000); //every 240 sec send a random command message
+
 
 
 client.on("chat", (channel, userstate, commandMessage, self) => {
@@ -372,4 +376,22 @@ function listeners(){
 	} );
 
 	app.listen( 9000, () => console.log( 'Node.js server started on port 9000.' ) );
+}
+
+function randommessage(){
+	let num = randomizeInteger(0, commands.length)
+	client.say(config.channel, commands[num].message);
+	
+}
+
+function randomizeInteger(min, max) {
+  	if(max == null) {
+    	max = (min == null ? Number.MAX_SAFE_INTEGER : min);
+      	min = 0;
+    }
+	
+    min = Math.ceil(min);  // inclusive min
+    max = Math.floor(max); // exclusive max
+
+    return min + Math.floor((max - min) * Math.random());
 }
