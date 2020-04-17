@@ -67,9 +67,9 @@ setInterval(function(){ //renew the follower subscribtion every 30 second
 	followersubscribe();
 }, 3600000);
 
-setInterval(function(){
+/*setInterval(function(){
 	randommessage();
-}, 240000); //every 240 sec send a random command message
+}, 240000); //every 240 sec send a random command message*/
 
 
 
@@ -235,7 +235,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 				client.say(config.channel, `@${userstate.username} üzenete törölve: Ezt a parancsot nem adhatod ki! :/`)
 			}
 			break;
-		case ("disableroll"):
+		case ("!disableroll"):
 			if(modcheck(userstate.username)){
 				enabledroll = false;
 				client.say(config.channel, "Roll kikapcsolva!");
