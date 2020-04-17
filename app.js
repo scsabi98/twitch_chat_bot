@@ -14,6 +14,7 @@ var log_stdout = process.stdout;
 
 var lastuptime = 0; //global variable needed for uptime timer
 var timer = 0;
+var enabledroll = false;
 
 
 console.log = function(d) { //
@@ -90,7 +91,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
     switch (commandName) {
         case ("!commands"):
             (() => {
-                let names = "!commands !uptime"
+                let names = "!commands !uptime !roll"
                     .split(/\s/)
                     .concat(
                         commands.map(c => {
@@ -223,6 +224,36 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 		case ("!ping"):
 			client.say(channel, "pong!");
 			break;
+		case ("!enableroll"):
+			if(modcheck(userstate.username)){
+				enabledroll = true;
+				client.say(config.channel, "Roll bekapcsolva!");
+				break;
+			}
+			else{
+				client.deletemessage(config.channel, userstate.id);
+				client.say(config.channel, `@${userstate.username} üzenete törölve: Ezt a parancsot nem adhatod ki! :/`)
+			}
+			break;
+		case ("disableroll"):
+			if(modcheck(userstate.username)){
+				enabledroll = false;
+				client.say(config.channel, "Roll kikapcsolva!");
+				break;
+			}
+			else{
+				client.deletemessage(config.channel, userstate.id);
+				client.say(config.channel, `@${userstate.username} üzenete törölve: Ezt a parancsot nem adhatod ki! :/`)
+			}
+			break;
+		case ("!roll"):
+			if (enabledroll == false){
+				client.deletemessage(config.channel, userstate.id);
+			} else {
+				var num = randomizeInteger(0, 100);
+				client.say(config.channel, `@${userstate.username} A mai nyerő számod: ` + num);
+				break;
+			}
         default:
             (() => {
                 let command = commands
@@ -360,7 +391,7 @@ function listeners(){
 			if (istroll == false){
 				var message = config.followalert_message;
 				message = message.replace("___", responsedata.data[0].from_name);
-				client.say('#bavaz1', message);
+				client.say(config.channel, message);
 				followers.push(responsedata.data[0].from_name);
 			}
 		}
