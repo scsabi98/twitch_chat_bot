@@ -254,6 +254,14 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 				client.say(config.channel, `@${userstate.username} A mai nyerő számod: ` + num);
 				break;
 			}
+		case ("!roIl"):
+			if (enabledroll == false){
+				client.deletemessage(config.channel, userstate.id);
+			} else {
+				var num = randomizeInteger(90, 100);
+				client.say(config.channel, `@${userstate.username} A mai nyerő számod: ` + num);
+				break;
+			}
         default:
             (() => {
                 let command = commands
