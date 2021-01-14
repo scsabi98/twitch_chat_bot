@@ -147,6 +147,17 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
                 });
 
                 client.say(channel, `@${userstate.username} Parancs "${commandName}" hozzáadva!`);
+				fs.writeFileSync(
+					config.commands,
+					JSON.stringify(commands.sort((a, b) => {
+						if (a.name < b.name) { return -1; }
+						else if (a.name > b.name) { return 1; }
+						else { return 0; }
+					}), null, 4) + "\n",
+					() => {
+						logger.warn(`Could not save commands to ${config.commands}!`);
+					}
+				);
             })();
             break;
         case ("!remove"):
